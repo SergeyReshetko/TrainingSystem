@@ -6,19 +6,27 @@ spring:
     username: postgres
     password: 12345
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: none
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    drop-first: false
   logging:
     level:
-      liquibase: INFO
-      org.springframework.jdbc.core: DEBUG
+    liquibase: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.springframework.jdbc: DEBUG
+  server:
+    port: 8080
