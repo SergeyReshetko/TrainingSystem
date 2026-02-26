@@ -19,6 +19,6 @@ public class SchedulesController {
     
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleDto> getSchedule(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getSchedulesById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.findById(id));
     }
 }

@@ -16,7 +16,7 @@ public class TeacherController {
     
     @GetMapping("/{id}")
     public ResponseEntity<TeacherDto> getTeacher(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(teacherService.getTeacherById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(teacherService.findById(id));
     }
     
     @PostMapping

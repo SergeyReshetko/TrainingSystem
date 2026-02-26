@@ -16,7 +16,7 @@ public class GroupController {
     
     @GetMapping("/{groupNumber}")
     public ResponseEntity<GroupDto> getGroupNumber(@PathVariable Integer groupNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(groupService.getGroupByNumber(groupNumber));
+        return ResponseEntity.status(HttpStatus.OK).body(groupService.findByGroupNumber(groupNumber));
     }
     
     @PostMapping

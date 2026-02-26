@@ -18,10 +18,10 @@ public class CourseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
-    private Integer courseId;
+    private Integer id;
     
     @Column(name = "course_name", nullable = false, length = 64, unique = true)
-    private String courseName;
+    private String name;
     
     @OneToOne
     @JoinColumn(name = "teacher_id", referencedColumnName = "teacher_id", nullable = false,
