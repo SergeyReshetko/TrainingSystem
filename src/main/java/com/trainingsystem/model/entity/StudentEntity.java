@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "students")
+@ToString(exclude = "group")
 public class StudentEntity {
     
     @Id
@@ -23,11 +25,7 @@ public class StudentEntity {
     @Column(name = "last_name", nullable = false, length = 64)
     private String lastName;
     
-    @Column(name = "group_number", nullable = false, unique = true)
-    private Integer groupNumber;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_number", referencedColumnName = "group_number",
-            insertable = false, updatable = false)
-    private GroupEntity studentGroups;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "group_number", referencedColumnName = "group_number")
+    private GroupEntity group;
 }

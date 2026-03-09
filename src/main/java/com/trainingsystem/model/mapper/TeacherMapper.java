@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface TeacherMapper {
     TeacherEntity toTeacherEntity(TeacherDto teacherDto);
     
-    TeacherDto toTeacherDto(TeacherEntity teacherEntity);
+    TeacherDto toTeacherDto(TeacherEntity teacher);
+    
 }

@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class TeacherDto {
-    private Integer teacherId;
+    private Integer id;
     private String firstName;
     private String lastName;
-    private CourseDto courseDto;
 }

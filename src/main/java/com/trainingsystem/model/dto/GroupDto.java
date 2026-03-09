@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class GroupDto {
-    private Integer groupId;
+    private Integer id;
     private Integer groupNumber;
 }

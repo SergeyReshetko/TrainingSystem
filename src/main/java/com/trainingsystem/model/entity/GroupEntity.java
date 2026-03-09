@@ -1,5 +1,6 @@
 package com.trainingsystem.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,9 +24,21 @@ public class GroupEntity {
     @Column(name = "group_number", nullable = false, unique = true)
     private Integer groupNumber;
     
-    @OneToMany(mappedBy = "studentGroups", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentEntity> studentEntity = new ArrayList<>();
+    @OneToMany(mappedBy = "group",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.LAZY
+    )
+    private List<StudentEntity> students = new ArrayList<>();
     
-    @OneToMany(mappedBy = "schedule_groups", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ScheduleEntity> scheduleEntity = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(
+            name = "group_course",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    @JsonManagedReference("group_course")
+    private List<CourseEntity> courses = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ScheduleEntity> schedules = new ArrayList<>();
 }

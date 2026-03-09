@@ -5,14 +5,17 @@ import com.trainingsystem.model.entity.ScheduleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CourseMapper.class, GroupMapper.class, TeacherMapper.class})
 public interface ScheduleMapper {
     
-    @Mapping(source = "scheduleId", target = "scheduleId")
+    ScheduleEntity toScheduleEntity(ScheduleDto scheduleDto);
+    
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "course.id", target = "courseId")
+    @Mapping(source = "group.id", target = "groupId")
+    @Mapping(source = "teacher.id", target = "teacherId")
+    @Mapping(source = "startTime", target = "startTime")
+    @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "date", target = "date")
-    @Mapping(source = "schedule_teachers.lastName", target = "teacherLastName")
-    @Mapping(source = "schedule_teachers.firstName", target = "teacherFirstName")
-    @Mapping(source = "schedule_groups.groupNumber", target = "groupNumber")
-    @Mapping(source = "schedule_courses.courseName", target = "courseName")
-    ScheduleDto toScheduleDto(ScheduleEntity scheduleEntity);
+    ScheduleDto toScheduleDto(ScheduleEntity schedule);
 }

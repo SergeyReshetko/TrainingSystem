@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,12 @@ public class TeacherEntity {
     @Column(name = "last_name", nullable = false, length = 64)
     private String lastName;
     
-    @OneToOne(mappedBy = "teachers", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true)
-    @JsonManagedReference("teacher_id")
+    @OneToOne(mappedBy = "teacher", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JsonManagedReference("course-teacher")
+    @ToString.Exclude
     private CourseEntity course;
     
-    @OneToMany(mappedBy = "schedule_teachers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ScheduleEntity> scheduleEntity = new ArrayList<>();
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<ScheduleEntity> schedules = new ArrayList<>();
 }
