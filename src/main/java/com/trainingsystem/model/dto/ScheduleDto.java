@@ -1,24 +1,25 @@
 package com.trainingsystem.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AccessLevel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 public class ScheduleDto {
-    private Long id;
-    private Integer courseId;
-    private Integer teacherId;
-    private Integer groupId;
+    Long id;
+    Integer courseId;
+    Integer teacherId;
+    Integer groupId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "H:mm:ss")
-    private LocalTime startTime;
+    LocalTime startTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "H:mm:ss")
-    private LocalTime endTime;
-    private LocalDate date;
+    LocalTime endTime;
+    LocalDate date;
 }

@@ -1,13 +1,14 @@
 package com.trainingsystem.model.dto;
 
+import lombok.AccessLevel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Data
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 public class GroupDto {
-    private Integer id;
-    private Integer groupNumber;
+    Integer id;
+    Integer groupNumber;
 }

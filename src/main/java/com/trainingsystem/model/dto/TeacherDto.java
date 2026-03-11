@@ -1,14 +1,15 @@
 package com.trainingsystem.model.dto;
 
+import lombok.AccessLevel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Data
-@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 public class TeacherDto {
-    private Integer id;
-    private String firstName;
-    private String lastName;
+    Integer id;
+    String firstName;
+    String lastName;
 }

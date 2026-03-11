@@ -30,3 +30,23 @@ spring:
     org.springframework.jdbc: DEBUG
   server:
     port: 8080
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: custom
+    tags-sorter: order
+    try-it-out-enabled: true
+    filter: true
+    display-request-duration: true  # Показывать время выполнения запроса
+    doc-expansion: list  # Как отображать endpoints: 'list', 'full', 'none'
+    default-models-expand-depth: 1  # Глубина разворачивания моделей
+    default-model-expand-depth: 1
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json  # Тип запросов по умолчанию
+  paths-to-match: /api/v1/**  # Какие пути включать в документацию
+  packages-to-scan: com.trainingsystem.controller
