@@ -1,5 +1,6 @@
 package com.trainingsystem.service;
 
+import com.trainingsystem.annotation.CheckExpiredEntities;
 import com.trainingsystem.dao.SchedulesRepository;
 import com.trainingsystem.exception.GroupNotFoundException;
 import com.trainingsystem.exception.ScheduleNotFoundException;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -153,4 +155,24 @@ public class ScheduleService {
     private boolean hasTimeConflict(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
         return !(end1.isBefore(start2) || start1.isAfter(end2));
     }
+    
+    @CheckExpiredEntities(
+            cron = "* * 3 * * ?",
+            entityType = ScheduleEntity.class,
+            action = CheckExpiredEntities.ExpiredAction.DELETE
+    )
+    @Transactional
+    @SuppressWarnings("unused")
+    public void deactivateExpiredSchedule() {
+        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
+        List<ScheduleEntity> expiredSchedules = schedulesRepository.findExpiringToday(oneYearAgo);
+        
+        if (expiredSchedules.isEmpty()) {
+            log.info("No expired schedules found");
+        } else {
+            log.info("Expired schedules found {}", expiredSchedules.size());
+        }
+        expiredSchedules.forEach(schedule -> deleteSchedule(schedule.getId()));
+    }
 }
+
