@@ -22,8 +22,11 @@ public class StudentController {
     }
     
     @GetMapping
-    public ResponseEntity<List<StudentDto>> getAllStudents() {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll());
+    public ResponseEntity<List<StudentDto>> getAllStudents(
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll(pageSize, pageNumber));
     }
     
     @GetMapping("/groupNumber/{groupNumber}")

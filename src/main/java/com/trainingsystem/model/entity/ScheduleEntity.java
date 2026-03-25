@@ -1,44 +1,41 @@
 package com.trainingsystem.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "schedules")
 public class ScheduleEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_id")
-    Long id;
+    @Column(name = "id")
+    private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", referencedColumnName = "course_id", nullable = false)
-    CourseEntity course;
+    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
+    private CourseEntity course;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", referencedColumnName = "teacher_id")
-    TeacherEntity teacher;
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    private TeacherEntity teacher;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", referencedColumnName = "group_id")
-    GroupEntity group;
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    private GroupEntity group;
     
-    @Column(name = "start_time", nullable = false)
-    LocalTime startTime;
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime startDate;
     
-    @Column(name = "end_time")
-    LocalTime endTime;
-    
-    @Column(name = "schedule_date", nullable = false)
-    LocalDate date;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 }

@@ -65,8 +65,10 @@ public class TeacherService {
         
         var teacherEntity = getTeacherEntity(id);
         var courseEntity = teacherEntity.getCourse();
-        courseEntity.setTeacher(null);
-        coursesRepository.save(courseEntity);
+        if (courseEntity != null) {
+            courseEntity.setTeacher(null);
+            coursesRepository.save(courseEntity);
+        }
         teachersRepository.delete(teacherEntity);
         return teacherMapper.toTeacherDto(teacherEntity);
     }

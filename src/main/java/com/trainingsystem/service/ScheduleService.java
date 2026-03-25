@@ -1,6 +1,5 @@
 package com.trainingsystem.service;
 
-import com.trainingsystem.annotation.CheckExpiredEntities;
 import com.trainingsystem.dao.SchedulesRepository;
 import com.trainingsystem.exception.GroupNotFoundException;
 import com.trainingsystem.exception.ScheduleNotFoundException;
@@ -13,10 +12,10 @@ import com.trainingsystem.model.mapper.ScheduleMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -95,9 +94,8 @@ public class ScheduleService {
                                                      + " from input group id: " + scheduleDto.getGroupId());
         }
         chackTime(groupEntity, scheduleDto);
-        scheduleEntity.setStartTime(scheduleDto.getStartTime());
-        scheduleEntity.setEndTime(scheduleDto.getEndTime());
-        scheduleEntity.setDate(scheduleDto.getDate());
+        scheduleEntity.setStartDate(scheduleDto.getStartDate());
+        scheduleEntity.setEndDate(scheduleDto.getEndDate());
         schedulesRepository.save(scheduleEntity);
         return scheduleMapper.toScheduleDto(scheduleEntity);
     }
@@ -111,7 +109,7 @@ public class ScheduleService {
         return scheduleMapper.toScheduleDto(scheduleEntity);
     }
     
-    protected ScheduleEntity getScheduleEntity(Long id) {
+    private ScheduleEntity getScheduleEntity(Long id) {
         return schedulesRepository.findById(id)
                        .orElseThrow(() -> new ScheduleNotFoundException(
                                "No Schedule found with id " + id
@@ -131,48 +129,41 @@ public class ScheduleService {
     }
     
     private void createEndTime(ScheduleDto scheduleDto) {
-        if (scheduleDto.getEndTime() == null) {
-            LocalTime endTime = scheduleDto.getStartTime().plusHours(1).plusMinutes(30);
-            scheduleDto.setEndTime(endTime);
+        if (scheduleDto.getEndDate() == null) {
+            LocalDateTime endTime = scheduleDto.getStartDate().plusHours(1).plusMinutes(30);
+            scheduleDto.setEndDate(endTime);
         }
     }
     
     private void chackTime(GroupEntity groupEntity, ScheduleDto scheduleDto) {
         List<ScheduleEntity> schedules = groupEntity.getSchedules().stream()
-                                                 .filter(g -> g.getDate().equals(scheduleDto.getDate()))
+                                                 .filter(
+                                                         g -> g.getGroup().getId().equals(scheduleDto.getGroupId())
+                                                 )
                                                  .toList();
         
         boolean timeConflict = schedules.stream()
                                        .anyMatch(s -> hasTimeConflict(
-                                               scheduleDto.getStartTime(), scheduleDto.getEndTime(),
-                                               s.getStartTime(), s.getEndTime()
+                                               scheduleDto.getStartDate(), scheduleDto.getEndDate(),
+                                               s.getStartDate(), s.getEndDate()
                                        ));
         if (timeConflict) {
             throw new TimeIlLegalArgumentException("Time is less than start time");
         }
     }
     
-    private boolean hasTimeConflict(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
+    private boolean hasTimeConflict(LocalDateTime start1,
+                                    LocalDateTime end1,
+                                    LocalDateTime start2,
+                                    LocalDateTime end2) {
         return !(end1.isBefore(start2) || start1.isAfter(end2));
     }
     
-    @CheckExpiredEntities(
-            cron = "* * 3 * * ?",
-            entityType = ScheduleEntity.class,
-            action = CheckExpiredEntities.ExpiredAction.DELETE
-    )
     @Transactional
-    @SuppressWarnings("unused")
+    @Scheduled(cron = "${scheduling.tasks.clean-expired-entities.cron:0 0 3 * * ?}")
     public void deactivateExpiredSchedule() {
-        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
-        List<ScheduleEntity> expiredSchedules = schedulesRepository.findExpiringToday(oneYearAgo);
-        
-        if (expiredSchedules.isEmpty()) {
-            log.info("No expired schedules found");
-        } else {
-            log.info("Expired schedules found {}", expiredSchedules.size());
-        }
-        expiredSchedules.forEach(schedule -> deleteSchedule(schedule.getId()));
+        log.info("Deactivating expired schedules");
+        LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+        schedulesRepository.deleteExpiredSchedules(oneYearAgo);
     }
 }
-

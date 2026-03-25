@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -17,9 +16,8 @@ public class ScheduleDto {
     Integer courseId;
     Integer teacherId;
     Integer groupId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "H:mm:ss")
-    LocalTime startTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "H:mm:ss")
-    LocalTime endTime;
-    LocalDate date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime startDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime endDate;
 }

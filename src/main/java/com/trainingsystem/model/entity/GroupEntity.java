@@ -2,8 +2,10 @@ package com.trainingsystem.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,23 +15,22 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "student_groups")
 public class GroupEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
-    Integer id;
+    @Column(name = "id")
+    private Integer id;
     
     @Column(name = "group_number", nullable = false, unique = true)
-    Integer groupNumber;
+    private Integer groupNumber;
     
     @OneToMany(mappedBy = "group",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.LAZY
     )
-    List<StudentEntity> students = new ArrayList<>();
+    private List<StudentEntity> students = new ArrayList<>();
     
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
@@ -38,8 +39,8 @@ public class GroupEntity {
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
     @JsonManagedReference("group_course")
-    List<CourseEntity> courses = new ArrayList<>();
+    private List<CourseEntity> courses = new ArrayList<>();
     
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<ScheduleEntity> schedules = new ArrayList<>();
+    private List<ScheduleEntity> schedules = new ArrayList<>();
 }

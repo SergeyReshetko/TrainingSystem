@@ -14,8 +14,7 @@ public interface ScheduleMapper {
     @Mapping(source = "course.id", target = "courseId")
     @Mapping(source = "group.id", target = "groupId")
     @Mapping(source = "teacher.id", target = "teacherId")
-    @Mapping(source = "startTime", target = "startTime")
-    @Mapping(source = "endTime", target = "endTime")
-    @Mapping(source = "date", target = "date")
+    @Mapping(source = "startDate", target = "startDate")
+    @Mapping(source = "endDate", target = "endDate")
     ScheduleDto toScheduleDto(ScheduleEntity schedule);
 }

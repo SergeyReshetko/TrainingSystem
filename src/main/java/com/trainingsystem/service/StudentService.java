@@ -8,6 +8,9 @@ import com.trainingsystem.model.mapper.StudentMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +23,10 @@ public class StudentService {
     private final StudentsRepository studentRepository;
     private final StudentMapper studentMapper;
     private final GroupService groupService;
+    @Value("${app.pageSize:10}")
+    private int pageSize;
+    @Value("${app.pageNumber:0}")
+    private int pageNumber;
     
     public StudentDto findById(long id) {
         log.info("Getting student by id {}", id);
@@ -28,10 +35,13 @@ public class StudentService {
         return studentMapper.toStudentDto(studentEntity);
     }
     
-    public List<StudentDto> findAll() {
-        log.info("Getting all students");
+    public List<StudentDto> findAll(Integer pageSize, Integer pageNumber) {
+        log.info("Getting {} students from the page number {}", pageSize, pageNumber);
         
-        List<StudentEntity> studentEntities = studentRepository.findAll();
+        this.pageSize = (pageSize != null) ? pageSize : this.pageSize;
+        this.pageNumber = (pageNumber != null) ? pageNumber : this.pageNumber;
+        var pageable = Pageable.ofSize(this.pageSize).withPage(this.pageNumber);
+        Page<StudentEntity> studentEntities = studentRepository.findAll(pageable);
         return studentEntities.stream()
                        .map(studentMapper::toStudentDto)
                        .toList();
@@ -80,14 +90,14 @@ public class StudentService {
         return studentMapper.toStudentDto(studentEntity);
     }
     
-    protected StudentEntity getStudentEntity(long id) {
+    private StudentEntity getStudentEntity(long id) {
         return studentRepository.findById(id).
                        orElseThrow(() -> new StudentNotFoundException(
                                "No student found with id " + id
                        ));
     }
     
-    protected List<StudentEntity> getListStudentsByGroupNumber(Integer groupNumber) {
+    private List<StudentEntity> getListStudentsByGroupNumber(Integer groupNumber) {
         return studentRepository.findAllByGroupGroupNumber(groupNumber)
                        .orElseThrow(() -> new StudentNotFoundException(
                                "No student found with groupNumber " + groupNumber

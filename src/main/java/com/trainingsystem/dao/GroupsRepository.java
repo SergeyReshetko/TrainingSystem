@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface GroupsRepository extends JpaRepository<GroupEntity, Integer> {
+    
     Optional<GroupEntity> findByGroupNumber(@Param("groupNumber") Integer groupNumber);
 }
