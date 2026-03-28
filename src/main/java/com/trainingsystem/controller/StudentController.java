@@ -1,6 +1,7 @@
 package com.trainingsystem.controller;
 
 import com.trainingsystem.model.dto.StudentDto;
+import com.trainingsystem.service.StudentCriteriaService;
 import com.trainingsystem.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.List;
 public class StudentController {
     
     private final StudentService studentService;
+    private final StudentCriteriaService studentCriteriaService;
     
     @GetMapping("/{id}")
     public ResponseEntity<StudentDto> getStudent(@PathVariable long id) {
@@ -27,6 +29,26 @@ public class StudentController {
             @RequestParam(name = "pageNumber", required = false) Integer pageNumber
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll(pageSize, pageNumber));
+    }
+    
+    @GetMapping("/predicates")
+    public ResponseEntity<List<StudentDto>> getAllStudentsByPredicates(
+            @RequestParam(name = "firstName", required = false) String firstName,
+            @RequestParam(name = "lastName", required = false) String lastName,
+            @RequestParam(name = "groupNumber", required = false) Integer groupNumber,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                studentCriteriaService
+                        .findAllStudentsByPredicates(
+                                firstName,
+                                lastName,
+                                groupNumber,
+                                pageSize,
+                                pageNumber
+                        )
+        );
     }
     
     @GetMapping("/groupNumber/{groupNumber}")

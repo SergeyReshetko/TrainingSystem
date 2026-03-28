@@ -5,13 +5,16 @@ import com.trainingsystem.exception.StudentNotFoundException;
 import com.trainingsystem.model.dto.StudentDto;
 import com.trainingsystem.model.entity.StudentEntity;
 import com.trainingsystem.model.mapper.StudentMapper;
-import jakarta.transaction.Transactional;
+
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,9 +27,9 @@ public class StudentService {
     private final StudentMapper studentMapper;
     private final GroupService groupService;
     @Value("${app.pageSize:10}")
-    private int pageSize;
+    private int defaultPageSize;
     @Value("${app.pageNumber:0}")
-    private int pageNumber;
+    private int defaultPageNumber;
     
     public StudentDto findById(long id) {
         log.info("Getting student by id {}", id);
@@ -35,13 +38,20 @@ public class StudentService {
         return studentMapper.toStudentDto(studentEntity);
     }
     
-    public List<StudentDto> findAll(Integer pageSize, Integer pageNumber) {
+    @NonNull
+    @Transactional(readOnly = true)
+    public List<StudentDto> findAll(
+            @Nullable Integer pageSize,
+            @Nullable Integer pageNumber
+    ) {
         log.info("Getting {} students from the page number {}", pageSize, pageNumber);
         
-        this.pageSize = (pageSize != null) ? pageSize : this.pageSize;
-        this.pageNumber = (pageNumber != null) ? pageNumber : this.pageNumber;
-        var pageable = Pageable.ofSize(this.pageSize).withPage(this.pageNumber);
+        this.defaultPageSize = (pageSize != null && pageSize > 0) ? pageSize : this.defaultPageSize;
+        this.defaultPageNumber = (pageNumber != null && pageNumber > 0) ? pageNumber : this.defaultPageNumber;
+        
+        var pageable = Pageable.ofSize(this.defaultPageSize).withPage(this.defaultPageNumber);
         Page<StudentEntity> studentEntities = studentRepository.findAll(pageable);
+        
         return studentEntities.stream()
                        .map(studentMapper::toStudentDto)
                        .toList();

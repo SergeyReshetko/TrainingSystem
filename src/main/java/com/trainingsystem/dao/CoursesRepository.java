@@ -19,6 +19,9 @@ public interface CoursesRepository extends JpaRepository<CourseEntity, Integer> 
             """)
     Optional<List<CourseEntity>> findAllWithTeacher();
     
-    @Query("SELECT c FROM CourseEntity c LEFT JOIN FETCH c.groups WHERE c.id = :id")
+    @Query("""
+             SELECT c FROM CourseEntity c
+                        WHERE c.id = :id
+            """)
     Optional<CourseEntity> findByIdWithGroups(@Param("id") Integer id);
 }
