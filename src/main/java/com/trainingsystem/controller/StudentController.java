@@ -4,6 +4,8 @@ import com.trainingsystem.model.dto.StudentDto;
 import com.trainingsystem.service.StudentCriteriaService;
 import com.trainingsystem.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +26,16 @@ public class StudentController {
     }
     
     @GetMapping
-    public ResponseEntity<List<StudentDto>> getAllStudents(
-            @RequestParam(name = "pageSize", required = false) Integer pageSize,
-            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll(pageSize, pageNumber));
+    public ResponseEntity<Page<StudentDto>> getAllStudents(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll(pageable));
     }
     
     @GetMapping("/predicates")
-    public ResponseEntity<List<StudentDto>> getAllStudentsByPredicates(
+    public ResponseEntity<Page<StudentDto>> getAllStudentsByPredicates(
             @RequestParam(name = "firstName", required = false) String firstName,
             @RequestParam(name = "lastName", required = false) String lastName,
             @RequestParam(name = "groupNumber", required = false) Integer groupNumber,
-            @RequestParam(name = "pageSize", required = false) Integer pageSize,
-            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+            Pageable pageable
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(
                 studentCriteriaService
@@ -45,8 +43,7 @@ public class StudentController {
                                 firstName,
                                 lastName,
                                 groupNumber,
-                                pageSize,
-                                pageNumber
+                                pageable
                         )
         );
     }

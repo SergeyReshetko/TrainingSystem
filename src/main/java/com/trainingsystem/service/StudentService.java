@@ -5,14 +5,13 @@ import com.trainingsystem.exception.StudentNotFoundException;
 import com.trainingsystem.model.dto.StudentDto;
 import com.trainingsystem.model.entity.StudentEntity;
 import com.trainingsystem.model.mapper.StudentMapper;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,21 +39,16 @@ public class StudentService {
     
     @NonNull
     @Transactional(readOnly = true)
-    public List<StudentDto> findAll(
-            @Nullable Integer pageSize,
-            @Nullable Integer pageNumber
-    ) {
-        log.info("Getting {} students from the page number {}", pageSize, pageNumber);
+    public Page<StudentDto> findAll(Pageable pageable) {
+        log.info("Getting all students");
         
-        this.defaultPageSize = (pageSize != null && pageSize > 0) ? pageSize : this.defaultPageSize;
-        this.defaultPageNumber = (pageNumber != null && pageNumber > 0) ? pageNumber : this.defaultPageNumber;
+        if (pageable == null) {
+            pageable = PageRequest.of(defaultPageNumber, defaultPageSize);
+        }
         
-        var pageable = Pageable.ofSize(this.defaultPageSize).withPage(this.defaultPageNumber);
         Page<StudentEntity> studentEntities = studentRepository.findAll(pageable);
         
-        return studentEntities.stream()
-                       .map(studentMapper::toStudentDto)
-                       .toList();
+        return studentEntities.map(studentMapper::toStudentDto);
     }
     
     public List<StudentDto> findAllByGroupNumber(Integer groupNumber) {

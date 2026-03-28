@@ -13,6 +13,9 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,43 +28,55 @@ import java.util.List;
 public class StudentCriteriaService {
     
     @PersistenceContext
-    private final EntityManager em;
+    private final EntityManager entityManager;
     private final StudentMapper studentMapper;
     @Value("${app.pageSize:10}")
-    private int pageSize;
+    private int defaultPageSize;
     @Value("${app.pageNumber:0}")
-    private int pageNumber;
+    private int defaultPageNumber;
     
-    public List<StudentDto> findAllStudentsByPredicates(
+    public Page<StudentDto> findAllStudentsByPredicates(
             String firstName,
             String lastName,
             Integer groupNumber,
-            Integer pageSize,
-            Integer pageNumber
+            Pageable pageable
     ) {
-        log.debug("Find all students by predicates");
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        log.debug("Find all students by predicates {}", pageable);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<StudentEntity> query = cb.createQuery(StudentEntity.class);
         Root<StudentEntity> root = query.from(StudentEntity.class);
-        
         root.fetch("group");
         
-        this.pageSize = (pageSize != null) ? pageSize : this.pageSize;
-        this.pageNumber = (pageNumber != null) ? pageNumber : this.pageNumber;
-        var pageable = Pageable.ofSize(this.pageSize).withPage(this.pageNumber);
+        query.orderBy(
+                cb.asc(root.get("firstName")),
+                cb.asc(root.get("lastName"))
+        );
+        
+        if (pageable == null) {
+            pageable = PageRequest.of(defaultPageNumber, defaultPageSize);
+        }
         
         List<Predicate> predicates = buildPredicates(cb, root, firstName, lastName, groupNumber);
         query.where(predicates.toArray(new Predicate[0]));
         
-        TypedQuery<StudentEntity> typedQuery = em.createQuery(query);
+        TypedQuery<StudentEntity> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
         
         List<StudentEntity> studentEntities = typedQuery.getResultList();
         
-        return studentEntities.stream()
-                       .map(studentMapper::toStudentDto)
-                       .toList();
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<StudentEntity> countRoot = countQuery.from(StudentEntity.class);
+        countQuery.select(cb.count(countRoot));
+        
+        Long total = entityManager.createQuery(countQuery).getSingleResult();
+        
+        return new PageImpl<>(
+                studentEntities.stream()
+                        .map(studentMapper::toStudentDto)
+                        .toList(),
+                pageable,
+                total);
     }
     
     private List<Predicate> buildPredicates(
