@@ -2,15 +2,15 @@ package com.trainingsystem.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Component
 public class ScheduleDto {
     Long id;
     Integer courseId;

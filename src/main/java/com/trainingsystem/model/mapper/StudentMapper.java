@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface StudentMapper {
+    
     StudentEntity toStudentEntity(StudentDto studentDto);
     
     @Mapping(source = "group", target = "group")

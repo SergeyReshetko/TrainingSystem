@@ -1,7 +1,9 @@
 package com.trainingsystem.controller;
 
+import com.trainingsystem.model.dto.TeacherCreateDto;
 import com.trainingsystem.model.dto.TeacherDto;
 import com.trainingsystem.service.TeacherService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +29,12 @@ public class TeacherController {
     }
     
     @PostMapping
-    public ResponseEntity<TeacherDto> saveTeacher(@RequestBody TeacherDto teacherDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.saveTeacher(teacherDto));
+    public ResponseEntity<TeacherDto> saveTeacher(@Valid @RequestBody TeacherCreateDto teacherCreateDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.saveTeacher(teacherCreateDto));
     }
     
     @PutMapping
-    public ResponseEntity<TeacherDto> updateTeacher(@RequestBody TeacherDto teacherDto) {
+    public ResponseEntity<TeacherDto> updateTeacher(@Valid @RequestBody TeacherDto teacherDto) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.updateTeacher(teacherDto));
     }
     
