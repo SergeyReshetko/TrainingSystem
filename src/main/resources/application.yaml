@@ -1,3 +1,65 @@
 spring:
   application:
-    name: trainingsystem
+    name: trainingSystem
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    drop-first: false
+  server:
+    port: 8080
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: custom
+    tags-sorter: order
+    try-it-out-enabled: true
+    filter: true
+    display-request-duration: true
+    doc-expansion: list
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+  paths-to-match: /api/v1/**
+  packages-to-scan: com.trainingsystem.controller
+  task:
+  scheduling:
+    pool:
+      size: 10
+    thread-name-prefix: scheduled-task-
+    shutdown:
+      await-termination: true
+      await-termination-period: 30s
+scheduling:
+  tasks:
+    clean-expired-entities:
+      cron: "0 0 3 * * ?"
+      enabled: true
+app:
+  name: "My Application"
+  version: "1.0.0"
+  pageSize: 10
+  pageNumber: 0
+logging:
+  level:
+    root: INFO
