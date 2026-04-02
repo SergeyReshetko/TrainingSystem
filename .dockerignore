@@ -1,0 +1,18 @@
+.git/
+.gitignore
+.idea/
+*.iml
+.DS_Store
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# Тесты и исходники (не нужны в runtime)
+#src/
+*.java
+test/
+
+# Файлы IDE
+.vscode/
+*.swp
